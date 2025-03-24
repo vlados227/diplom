@@ -1,8 +1,10 @@
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 import { validationResult } from "express-validator";
+import dotenv from 'dotenv';
 
 import UserModel from '../models/user.js'
+dotenv.config();
 
 function tokenize(user, res) {
    const token = jwt.sign(
@@ -10,7 +12,7 @@ function tokenize(user, res) {
          _id: user._id,
          role: user.role,
       },
-      "secret123",
+      process.env.SECRET_KEY,
       {
          expiresIn: "30d",
       }

@@ -6,7 +6,7 @@ export const checkAdmin = (req, res, next) => {
         if (!token) {
             return res.status(401).json({ message: "Нет доступа" });
         }
-        const decoded = jwt.verify(token, "secret123");
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
         if (decoded.role !== "admin") {
             return res.status(403).json({ message: "Нет доступа к панели админа" });

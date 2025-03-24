@@ -4,7 +4,12 @@ export const registerValidator = [
     body('email').isEmail(),
     body('password').isLength({min: 6}),
     body('fullName').isLength({min: 3}),
-    //body('avararUrl').optional().isURL(),
+]
+
+export const addUserValidator = [
+    body('userId').isMongoId(),
+    body('excursionId').isMongoId(),
+    //body('date').isDate() Todo-  не раскоменчивать пока не проверено на адекватаную работу
 ]
 
 export const loginVaildator = [

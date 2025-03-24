@@ -1,6 +1,6 @@
 import Excursion from "../models/Excursion.js";
 
-export const addUser = async (req, res) => {
+export const addUserIntoExcursion = async (req, res) => {
     try {
         const { excursionId, userId, date } = req.body;
         const excursion = await Excursion.findById(excursionId);
