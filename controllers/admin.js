@@ -9,6 +9,18 @@ export const getAllExcursions = async (req, res) => {
     }
 }
 
+
+export const removeOne = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const excursion = await Excursion.findByIdAndDelete(id);
+        res.status(200).json("Данная экскурсия \n"+excursion + " удалена");
+    } catch (error) {
+        return res.status(404).json({
+            message:"Не удалось удалить экскурсию "+ error});
+    }
+}
+
 export const updateExcursion = async (req, res) => {
     try {
         const { id } = req.params;
