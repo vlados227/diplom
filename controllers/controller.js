@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { validationResult } from "express-validator";
 import dotenv from 'dotenv';
 
+import Excursion from "../models/Excursion.js";
 import UserModel from '../models/user.js'
 dotenv.config();
 
@@ -78,7 +79,7 @@ export const login = async (req, res) => {
         });
     }
 };
-export const getMe = async(req, res)=>{
+export const getUser = async(req, res)=>{
     try {
         const user = await UserModel.findById(req.userId);
 
@@ -95,5 +96,26 @@ export const getMe = async(req, res)=>{
         res.status(500).json({
             message: err+ "no",
         });  
+    }
+};
+
+export const getExcursions = async (req, res) => { //проверить пагинацию
+    try {
+        const {page = 1, limit = 10} = req.query;
+        const skip = (page - 1) * limit;
+        const excrusions = await Excursion.find({},"_id title description location date maxParticipants price")
+        .skip(skip)
+        .limit(Number(limit));
+        const total = await Excursion.countDocuments();
+        res.status(200).json({
+            total,
+            page: Number(page),
+            totalPages: Math.ceil(total / limit),
+            excrusions,
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: error + " Не удалось получить экскурсии",
+        });
     }
 }

@@ -9,7 +9,7 @@ import * as Controller from "./controllers/controller.js";
 import { createNewExcursion } from "./controllers/admin.js";
 import { addUserIntoExcursion } from "./controllers/purchase.js";
 import { checkAdmin } from "./middleware/checkAdmin.js";
-import { getAllExcursions, updateExcursion, removeOne } from "./controllers/admin.js";
+import { manageExcursions, updateExcursion, removeOne } from "./controllers/admin.js";
 
 dotenv.config();
 export const app = express();
@@ -39,9 +39,9 @@ app.post("/auth/login", loginVaildator, Controller.login);
 
 app.post("/auth/register", registerValidator, Controller.register);
 
-app.get('/auth/me', checkAuth, Controller.getMe);
+app.get('/auth/me', checkAuth, Controller.getUser);
 
-app.post("/upload", upload.single('image'), (req, res)=>{
+app.post("/upload", upload.single('image'), (req, res)=>{ // не работает
     res.json({
         url: `/uploads/${req.file.originalname}`
     })
@@ -50,9 +50,11 @@ app.post("/upload", upload.single('image'), (req, res)=>{
 //app.post("/admin/add", checkAuth, createNewExcursion); // мб  вернуть такой
 app.post("/excursions", checkAuth, checkAdmin, createNewExcursion);
 
-app.post('/excursions/purchase', checkAuth, addUserValidator,addUserIntoExcursion);
+app.post('/excursions/purchase', checkAuth, addUserValidator, addUserIntoExcursion);
 
-app.get("/admin/all", checkAuth, checkAdmin, getAllExcursions);
+app.get("/admin/all", checkAuth, checkAdmin, manageExcursions);
+
+app.get("/excursions/all", checkAuth, Controller.getExcursions);
 
 app.put("/admin/excursions/:id", checkAuth, checkAdmin, updateExcursion);
 
@@ -62,5 +64,5 @@ app.listen(process.env.PORT, (err) => {
     if (err) {
         console.log(err);
     }
-    console.log(`server address: http://localhost:${process.env.PORT}/`);
+    console.log(`server address: http://localhost:${process.env.PORT}`);
 });

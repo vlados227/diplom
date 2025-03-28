@@ -1,6 +1,6 @@
 import Excursion from "../models/Excursion.js";
 
-export const getAllExcursions = async (req, res) => {
+export const manageExcursions = async (req, res) => {
     try {
         const excursions = await Excursion.find().populate("participants", "fullName email");
         res.status(200).json({excursion: excursions});
