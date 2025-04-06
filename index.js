@@ -2,14 +2,13 @@ import express from "express";
 import mongoose from "mongoose";
 import multer from "multer";
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 import { registerValidator, loginVaildator, addUserValidator } from "./validation.js";
 import checkAuth from "./middleware/checkAuth.js";
 import * as Controller from "./controllers/controller.js";
-import { createNewExcursion } from "./controllers/admin.js";
-import { addUserIntoExcursion } from "./controllers/purchase.js";
+import * as AdminController from "./controllers/admin.js";
 import { checkAdmin } from "./middleware/checkAdmin.js";
-import { manageExcursions, updateExcursion, removeOne } from "./controllers/admin.js";
 
 dotenv.config();
 export const app = express();
@@ -34,12 +33,16 @@ mongoose.connect(process.env.MONGO_URI)
     });
 
 app.use(express.json())
+app.use(cors({
+   origin: "http://localhost:3000"
+}));
 
-app.post("/auth/login", loginVaildator, Controller.login);
+app.post("/login", loginVaildator, Controller.login); //есть фронтенд
 
-app.post("/auth/register", registerValidator, Controller.register);
+app.post("/register", registerValidator, Controller.register); //есть фронтенд
 
-app.get('/auth/me', checkAuth, Controller.getUser);
+
+app.get('/me', checkAuth, Controller.getUser);
 
 app.post("/upload", upload.single('image'), (req, res)=>{ // не работает
     res.json({
@@ -47,18 +50,17 @@ app.post("/upload", upload.single('image'), (req, res)=>{ // не работае
     })
 })
 
-//app.post("/admin/add", checkAuth, createNewExcursion); // мб  вернуть такой
-app.post("/excursions", checkAuth, checkAdmin, createNewExcursion);
+app.post("/admin/add", checkAuth, AdminController.createNewExcursion); // мб  вернуть такой
 
-app.post('/excursions/purchase', checkAuth, addUserValidator, addUserIntoExcursion);
+app.post('/excursions/purchase', checkAuth, addUserValidator, Controller.addUserIntoExcursion);
 
-app.get("/admin/all", checkAuth, checkAdmin, manageExcursions);
+app.get("/admin/all", checkAuth, checkAdmin, AdminController.manageExcursions);
 
-app.get("/excursions/all", checkAuth, Controller.getExcursions);
+app.get("/excursions/all",  Controller.getExcursions); // есть фронтенд
 
-app.put("/admin/excursions/:id", checkAuth, checkAdmin, updateExcursion);
+app.put("/admin/excursions/:id", checkAuth, checkAdmin, AdminController.updateExcursion);
 
-app.delete("/admin/excrusions/delete/:id", checkAuth, checkAdmin, removeOne) // Todo- возмжно надо переделать маршрут убрав /delete
+app.delete("/admin/excrusions/delete/:id", checkAuth, checkAdmin, AdminController.removeOne) // Todo- возмжно надо переделать маршрут убрав /delete
 
 app.listen(process.env.PORT, (err) => {
     if (err) {

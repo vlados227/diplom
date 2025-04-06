@@ -9,6 +9,7 @@ const Excursion = new mongoose.Schema({
     description: {
         type: String,
         required: true,
+        trim: true
     },
     location: {
         type: String,
@@ -28,6 +29,10 @@ const Excursion = new mongoose.Schema({
     },
     participants: {
         type: [mongoose.Schema.Types.ObjectId], ref: "User", default: [],
+    },
+    image: {
+        type: String,
+        reqired: true
     }
 });
 
