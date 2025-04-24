@@ -34,13 +34,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 app.use(express.json())
 app.use(cors({
-   origin: "http://localhost:3000"
+   origin: "http://localhost:3000" || "http://10.33.0.2:3000"
 }));
-
-app.post("/login", loginVaildator, Controller.login); //есть фронтенд
-
-app.post("/register", registerValidator, Controller.register); //есть фронтенд
-
 
 app.get('/me', checkAuth, Controller.getUser);
 
@@ -49,22 +44,26 @@ app.post("/upload", upload.single('image'), (req, res)=>{ // не работае
         url: `/uploads/${req.file.originalname}`
     })
 })
+app.post("/login", loginVaildator, addUserValidator,Controller.login); //есть фронтенд
+
+app.post("/register", registerValidator, Controller.register); //есть фронтенд
+
+app.post('/excursions/purchase', checkAuth, addUserValidator, Controller.addUserIntoExcursion); //есть компонент нужно затестить !!
+
+app.get("/excursions/all",  Controller.getExcursions); // есть фронтенд
+//adminka
 
 app.post("/admin/add", checkAuth, AdminController.createNewExcursion); // мб  вернуть такой
 
-app.post('/excursions/purchase', checkAuth, addUserValidator, Controller.addUserIntoExcursion);
-
-app.get("/admin/all", checkAuth, checkAdmin, AdminController.manageExcursions);
-
-app.get("/excursions/all",  Controller.getExcursions); // есть фронтенд
+app.get("/admin/all", checkAuth, checkAdmin, AdminController.manageExcursions);// вся инфа об экскурсиях
 
 app.put("/admin/excursions/:id", checkAuth, checkAdmin, AdminController.updateExcursion);
 
-app.delete("/admin/excrusions/delete/:id", checkAuth, checkAdmin, AdminController.removeOne) // Todo- возмжно надо переделать маршрут убрав /delete
+app.delete("/admin/excursions/delete/:id", checkAuth, checkAdmin, AdminController.removeOne);
 
 app.listen(process.env.PORT, (err) => {
     if (err) {
         console.log(err);
     }
-    console.log(`server address: http://localhost:${process.env.PORT}`);
+    console.log(`server address: http://192.168.0.104:${process.env.PORT}`);
 });

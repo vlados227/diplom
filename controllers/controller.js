@@ -4,7 +4,7 @@ import { validationResult } from "express-validator";
 import dotenv from 'dotenv';
 
 import Excursion from "../models/Excursion.js";
-import UserModel from '../models/user.js'
+import User from '../models/user.js'
 dotenv.config();
 
 function tokenize(user, res) {
@@ -37,7 +37,7 @@ export const register = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(password, salt);
 
-        const doc = new UserModel({
+        const doc = new User({
             email: req.body.email,
             fullName: req.body.fullName,
             passwordHash: hash,
@@ -54,7 +54,7 @@ export const register = async (req, res) => {
 };
 export const login = async (req, res) => {
     try {
-        const user = await UserModel.findOne({ email: req.body.email });
+        const user = await User.findOne({ email: req.body.email });
         if (!user) {
             return res.status(404).json({
                 message: "Пользователь не найден",
@@ -79,18 +79,22 @@ export const login = async (req, res) => {
         });
     }
 };
-export const getUser = async(req, res)=>{
+export const getUser = async(req, res)=> {
     try {
-        const user = await UserModel.findById(req.userId);
-
+        const user = await User.findById(req.userId);
+        
         if(!user){
             return res.status(404).json({
                 message: "Пользователь не найден",
             }); 
         }
+        const excursion = await Excursion.find({participants: user._id}).populate({
+            path: 'participants',
+            select: `fullName email`,
+        });
          const { passwordHash, ...userData } = user._doc;
       
-         res.json({userData});
+         res.json({userData, excursion});
             
     } catch (err) {
         res.status(500).json({
@@ -103,7 +107,7 @@ export const getExcursions = async (req, res) => { //проверить паги
     try {
         const {page = 1, limit = 10} = req.query;
         const skip = (page - 1) * limit;
-        const excrusions = await Excursion.find({},"_id title description location date maxParticipants price")
+        const excursions = await Excursion.find({},"_id title description location date maxParticipants price")
         .skip(skip)
         .limit(Number(limit));
         const total = await Excursion.countDocuments();
@@ -111,7 +115,7 @@ export const getExcursions = async (req, res) => { //проверить паги
             total,
             page: Number(page),
             totalPages: Math.ceil(total / limit),
-            excrusions,
+            excursions,
         })
     } catch (error) {
         res.status(500).json({
