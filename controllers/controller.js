@@ -107,7 +107,7 @@ export const getExcursions = async (req, res) => { //проверить паги
     try {
         const {page = 1, limit = 10} = req.query;
         const skip = (page - 1) * limit;
-        const excursions = await Excursion.find({},"_id title description location date maxParticipants price")
+        const excursions = await Excursion.find({},"_id title description location date maxParticipants price image")
         .skip(skip)
         .limit(Number(limit));
         const total = await Excursion.countDocuments();

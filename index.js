@@ -23,6 +23,8 @@ const storage = multer.diskStorage({ //Todo- доделать загрузку �
 });
 const upload = multer({storage});
 
+app.use('/uploads', express.static('uploads'));
+
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log("db ok");
@@ -39,23 +41,17 @@ app.use(cors({
 
 app.get('/me', checkAuth, Controller.getUser);
 
-app.post("/upload", upload.single('image'), (req, res)=>{ // не работает
-    res.json({
-        url: `/uploads/${req.file.originalname}`
-    })
-})
-app.post("/login", loginVaildator, addUserValidator,Controller.login); //есть фронтенд
+app.post("/login", loginVaildator, addUserValidator,Controller.login);
+app.post("/register", registerValidator, Controller.register);
 
-app.post("/register", registerValidator, Controller.register); //есть фронтенд
+app.post('/excursions/purchase', checkAuth, addUserValidator, Controller.addUserIntoExcursion);
 
-app.post('/excursions/purchase', checkAuth, addUserValidator, Controller.addUserIntoExcursion); //есть компонент нужно затестить !!
+app.get("/excursions/all",  Controller.getExcursions);
 
-app.get("/excursions/all",  Controller.getExcursions); // есть фронтенд
-//adminka
+//маршруты адмнистратора
+app.post("/admin/add", checkAuth, upload.single('image'), AdminController.createNewExcursion);
 
-app.post("/admin/add", checkAuth, AdminController.createNewExcursion); // мб  вернуть такой
-
-app.get("/admin/all", checkAuth, checkAdmin, AdminController.manageExcursions);// вся инфа об экскурсиях
+app.get("/admin/all", checkAuth, checkAdmin, AdminController.manageExcursions);
 
 app.put("/admin/excursions/:id", checkAuth, checkAdmin, AdminController.updateExcursion);
 

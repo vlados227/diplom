@@ -32,7 +32,7 @@ const Excursion = new mongoose.Schema({
     },
     image: {
         type: String,
-        reqired: true
+        required: false
     }
 });
 

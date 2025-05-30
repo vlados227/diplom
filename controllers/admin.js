@@ -53,6 +53,11 @@ export const updateExcursion = async (req, res) => {
 export const createNewExcursion = async (req, res) => {
     try {
         const { title, description, price, date, maxParticipants, location } = req.body;
+        const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+        if (!image) {
+            return res.status(400).json({ message: 'Изображение обязательно' });
+        }
 
         const newExcursion = new Excursion({
             title,
@@ -60,7 +65,8 @@ export const createNewExcursion = async (req, res) => {
             price,
             date,
             maxParticipants,
-            location
+            location,
+            image
         });
 
         const savedExcursion = await newExcursion.save();
