@@ -61,6 +61,8 @@ app.put("/admin/excursions/:id", checkAuth, checkAdmin, AdminController.updateEx
 
 app.delete("/admin/excursions/delete/:id", checkAuth, checkAdmin, AdminController.removeOne);
 
+app.get("/admin/excursions/:id", checkAuth, checkAdmin, AdminController.getExcursionById)
+
 app.listen(process.env.PORT, (err) => {
     if (err) {
         console.log(err);

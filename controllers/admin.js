@@ -21,6 +21,19 @@ export const removeOne = async (req, res) => {
     }
 }
 
+export const getExcursionById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const excursion = await Excursion.findById(id).populate("participants", "fullName email");
+        if (!excursion) {
+            return res.status(404).json({ message: "Экскурсия не найдена" });
+        }
+        res.status(200).json(excursion);
+    } catch (error) {
+        res.status(501).json({ message: "Не удалось получить экскурсию " + error });
+    }
+}
+
 export const updateExcursion = async (req, res) => {
     try {
         const { id } = req.params;
