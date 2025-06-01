@@ -88,10 +88,7 @@ export const getUser = async(req, res)=> {
                 message: "Пользователь не найден",
             }); 
         }
-        const excursion = await Excursion.find({participants: user._id}).populate({
-            path: 'participants',
-            select: `fullName email`,
-        });
+        const excursion = await Excursion.find({participants: user._id});
          const { passwordHash, ...userData } = user._doc;
       
          res.json({userData, excursion});
