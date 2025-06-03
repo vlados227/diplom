@@ -89,13 +89,13 @@ export const getUser = async(req, res)=> {
             }); 
         }
         const excursion = await Excursion.find({participants: user._id}).select("-participants");
-         const { passwordHash, ...userData } = user._doc;
+         const { passwordHash, role, ...userData } = user._doc;
       
          res.json({userData, excursion});
             
     } catch (err) {
         res.status(500).json({
-            message: err+ "no",
+            message: `$server error ${err}`,
         });  
     }
 };

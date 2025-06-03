@@ -24,4 +24,5 @@ export const postCreateValidation = [
     body('date', "Date").isDate(),
     body('price', "Price").isInt(),
     body('maxParticipants', "max people").isInt(),
+    body('image').isURL()
 ]
