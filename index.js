@@ -36,12 +36,14 @@ mongoose.connect(process.env.MONGO_URI)
 
 app.use(express.json())
 app.use(cors({
-   origin: "http://localhost:3000" || "http://10.33.0.2:3000"
+    // origin: "http://localhost:3000"
+    origin: "*"
 }));
 
 app.get('/me', checkAuth, Controller.getUser);
 
-app.post("/login", loginVaildator, addUserValidator,Controller.login);
+app.post("/login", loginVaildator, addUserValidator, Controller.login);
+
 app.post("/register", registerValidator, Controller.register);
 
 app.post('/excursions/purchase', checkAuth, addUserValidator, Controller.addUserIntoExcursion);
@@ -57,11 +59,15 @@ app.put("/admin/excursions/:id", checkAuth, checkAdmin, AdminController.updateEx
 
 app.delete("/admin/excursions/delete/:id", checkAuth, checkAdmin, AdminController.removeOne);
 
-app.get("/admin/excursions/:id", checkAuth, checkAdmin, AdminController.getExcursionById)
+app.get("/admin/excursions/:id", checkAuth, checkAdmin, AdminController.getExcursionById);
+
+app.get("/slow/:timeout", Controller.slowResponse);
+
+app.get("/codes/:httpcode", Controller.returnHttpError);
 
 app.listen(process.env.PORT, (err) => {
     if (err) {
         console.log(err);
     }
-    console.log(`server address: http://192.168.0.104:${process.env.PORT}`);
+    console.log(`server address: http://localhost:${process.env.PORT}`);
 });

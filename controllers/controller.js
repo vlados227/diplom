@@ -100,6 +100,18 @@ export const getUser = async(req, res)=> {
     }
 };
 
+export const slowResponse = async (req, res) => {
+    const timeout = parseInt(req.params.timeout, 10);
+    setTimeout(() => {
+        res.json(`timeout is ${timeout} ms`);
+    }, timeout);
+}
+
+export const returnHttpError = async (req, res) => {
+    const httpcode = parseInt(req.params.httpcode, 10);
+    res.status(httpcode).json(`http code ${httpcode}`);
+}
+
 export const getExcursions = async (req, res) => { //проверить пагинацию
     try {
         const {page = 1, limit = 10} = req.query;
